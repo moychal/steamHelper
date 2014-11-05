@@ -8,9 +8,10 @@ import java.util.*;
 public class HelperMain {
 	
 	//keyPrice and keyToRef fluctuate based on personal preference.
+	//"keys" and "Refined" or "Ref" are in-game currencies.
 	public static double keyPrice = 1.85; 
 	public static String id64;
-	public static double keyToRef = 10; //9.88 ref
+	public static double keyToRef = 10;
 	
 	//Personal user information.
 	private static String repTft = "";
@@ -34,7 +35,13 @@ public class HelperMain {
 		if (input.nextLine().contains("y")) {
 			classifiedHelper(input);
 		}
-		
+		boolean done = false;
+		while (!done) {
+			System.out.print("Number to round to 2 decimal places: ");
+			System.out.println("Rounded: " + round(Double.parseDouble(input.nextLine())));
+			System.out.print("Continue? n if no: ");
+			done = input.nextLine().contains("n");
+		}
 	}
 	
 	public static void classifiedHelper(Scanner input) {
@@ -54,10 +61,9 @@ public class HelperMain {
 	//ToDo: save updates from saved files, or update it from external pricing website
 	public static void updatePrices(Scanner input) {
 		System.out.print("Enter price of keys in $: ");
-		keyPrice = input.nextDouble();
+		keyPrice = Double.parseDouble(input.nextLine());
 		System.out.print("Enter refined to key ratio: ");
-		keyToRef = input.nextDouble();
-		input.nextLine(); //scans past the white enter space
+		keyToRef = Double.parseDouble(input.nextLine());
 	}
 	
 	public static void paypalPrompt(Scanner input) {
@@ -75,8 +81,7 @@ public class HelperMain {
 		System.out.print("id64: ");
 		id64 = input.nextLine();
 		System.out.print("Number of keys?: ");
-		double amount = input.nextDouble();
-		input.nextLine(); //scans past the white enter space
+		double amount = Double.parseDouble(input.nextLine());
 		double total = round(amount * keyPrice);
 		System.out.println(amount + " keys will be $" + total
 							+ ", excluding fees, which are on you.  My"
@@ -109,8 +114,7 @@ public class HelperMain {
 		boolean done = false;
 		while (!done) {
 			System.out.print("Round this number to two decimal places: ");
-			Scanner scanLine = new Scanner(input.nextLine());
-			System.out.println("Result: " + round(scanLine.nextDouble()));
+			System.out.println("Result: " + round(Double.parseDouble(input.nextLine())));
 			System.out.print("End?  Type \"y\" ");
 			done = input.nextLine().toLowerCase().contains("y");
 		}
