@@ -3,49 +3,72 @@
 // Objective: Aids in my virtual items trading with general computing, value storage
 // 			  message prompts, etc.
 
+import javax.swing.*;
 import java.io.*;
 // import java.net.*:
 import java.util.*;
+
 
 public class HelperMain {
 	
 	//keyPrice and keyToRef fluctuate based on personal preference.
 	//"keys" and "Refined" or "Ref" are in-game currencies.
-	public static double keyPrice; 
-	public static String id64;
+	public static double keyPrice;
 	public static double keyToRef;
 	
 	//Personal user information.
 	private static String repTft = "";
 	private static String repSource = "";
 	private static String repTrust = "";
-	private static String email = "";
-	
+	private static String email = "michael.shintaku1@gmail.com";
 	
 	//To do: implement GUI, make program executable?
 	public static void main (String args[]) throws FileNotFoundException  {
+
 		Scanner input = new Scanner(System.in);
+		/* Executes the program through console
 		File settings = new File("settings.txt");
 		if (settings.exists()) {
 			loadPrices();
+			System.out.println("Key price: " + keyPrice + "\n" + "Refined Price: " + keyToRef);
 			System.out.print("Update prices?: y/n: ");
 			if (input.nextLine().contains("y")) {
-				updatePrices(input);
+				updatePricesHelper(input);
+				loadPrices();
 			}
 		} else {
-			updatePrices(input);
+			updatePricesHelper(input);
+			loadPrices();
 		}
 		System.out.print("PayPal prompt?: y/n: ");
 		if (input.nextLine().contains("y")) {
-			paypalPrompt(input);
+			System.out.print("id64: ");
+			String id = input.nextLine();
+			System.out.print("Number of keys: ");
+			double num = Double.parseDouble(input.nextLine());
+			System.out.println(question(id, num));
+			System.out.print("SourceOP? y/n: ");
+			System.out.println(leaveRep(input.nextLine().contains("y")));
 		}
+		//*/
+		// executes program through gui
+		HelperWindow window = new HelperWindow();
 		System.out.print("Classified helper?: y/n: ");
 		if (input.nextLine().contains("y")) {
 			classifiedHelper(input);
 		}
 		//roundTester(input);
 	}
-	
+
+	//used to update the prices via the console.
+	public static void updatePricesHelper(Scanner input) throws FileNotFoundException {
+		System.out.print("USD Price: ");
+		double usd = Double.parseDouble(input.nextLine());
+		System.out.print("Refined Price: ");
+		double ref = Double.parseDouble(input.nextLine());
+		updatePrices(usd, ref);
+	}
+
 	//todo: not rounding/preserving precision correctly
 	public static void classifiedHelper(Scanner input) {
 		boolean done = false;
@@ -61,61 +84,39 @@ public class HelperMain {
 	}
 	
 	//pre: settings file is THE settings file created by updatePrices
+	//post: sets field variables to data saved in settings file.
 	public static void loadPrices() throws FileNotFoundException {
 		Scanner fileReader = new Scanner(new File("settings.txt"));
 		fileReader.next(); //scan past prefix/titles
 		keyPrice = fileReader.nextDouble();
 		fileReader.next();
 		keyToRef = fileReader.nextDouble();
-		System.out.println("Current key price: $" + keyPrice);
-		System.out.println("Current key price: " + keyToRef + " Refined");
 	}
-	
-	//post: updates the fields
-	//saves keyPrice and keyToRef in a .txt file, and updates said file.
-	//ToDo: update it from external pricing website
-	public static void updatePrices(Scanner input)  throws FileNotFoundException {
-		System.out.print("Enter new price of keys in $: ");
-		keyPrice =  Double.parseDouble(input.nextLine());
-		System.out.print("Enter new refined to key ratio: ");
-		keyToRef = Double.parseDouble(input.nextLine());
+
+	//post; saves prices passed in to a file named settings.txt
+	//ToDo update it from external pricing website
+	public static void updatePrices(double usd, double ref)  throws FileNotFoundException {
 		PrintStream output = new PrintStream(new File("settings.txt"));
-		output.println("keyPrice= " + keyPrice);
-		output.println("keyToRef= " + keyToRef);
+		output.println("keyPrice= " + usd);
+		output.println("keyToRef= " + ref);
 	}
-	
-	//post: outputs the affadvits
+
 	//ToDo: launch various websites and search for data?  Might need to use their apis
-	public static void paypalPrompt(Scanner input) {
-		System.out.println("Ok, where did you see my listing, how many keys do you want, "
-							+ "do you have any rep threads, and from what e-mail will you be sending from?");
-		/*//Unnecessary at the moment.
-		try {
-			String url = "http://steamrep.com";
-			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-		} 
-		catch (java.io.IOException e) {
-			System.out.println(e.getMessage());
-		}
-		*/
-		System.out.print("id64: ");
-		id64 = input.nextLine();
-		System.out.print("Number of keys?: ");
-		double amount = Double.parseDouble(input.nextLine());
+	public static String question(String id, double amount) {
 		double total = round(amount * keyPrice);
-		System.out.println(amount + " keys will be $" + total + ", excluding fees, which are on you.  My account is US based.");
-		System.out.println("Ok when ready, send $" + total + " (excluding fees) to " + email + ", YOU pay any and all fees, and put this in the notes:");
-		System.out.println("I, [Real Name], steam user: " + id64 + " am buying " + amount + " TF2 keys, and understand that this is non-refundable and will not charge-back.");
-		System.out.print("SOP? Type y/n: ");
-		if (input.nextLine().contains("y")) {
-			System.out.println("Thanks!  Feel free to leave rep if you want!\n"
-								+ repSource +" or " + repTrust);
+		return amount + " keys will be $" + total + ", excluding fees, which are on you.  My account is US based.\n"
+		+ "Ok when ready, send $" + total + " (excluding fees) to " + email + ", YOU pay any and all fees, and put this in the notes:\n"
+		+ "I, [Real Name], steam user: " + id + " am buying " + amount + " TF2 keys, and understand that this is non-refundable and will not charge-back.";
+	}
+
+	public static String leaveRep(boolean sourceOP) {
+		if (sourceOP) {
+			return "Thanks!  Feel free to leave rep if you want!\n" + repSource +" or " + repTrust;
 		} else {
-				System.out.println("Thanks!  Feel free to leave rep if you want!\n"
-									+ repTrust + " or " + repTft);
+			return "Thanks!  Feel free to leave rep if you want!\n" + repTrust + " or " + repTft;
 		}
 	}
-	
+
 	//pre: num must be a positive double, a.k.a, the $ they have to pay
 	//post: rounds to two decimal places
 	public static double round(double num) {
