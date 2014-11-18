@@ -1,4 +1,4 @@
 steamHelper
 ===========
 
-Helps customize affadavits for trading, sum total costs, and more.
+Helps customize affadavits for trading in the world's largest virtual hat simulator.
